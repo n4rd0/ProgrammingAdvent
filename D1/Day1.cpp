@@ -58,7 +58,7 @@ int main() {
 	myFile.close();
 
 	cout << "Answer 1 = " << D11(modules) << endl;
-	cout << "Answer 1 = " << D12(modules) << endl;
+	cout << "Answer 2 = " << D12(modules) << endl;
 
 	return 0;
 }
