@@ -34,15 +34,13 @@ int D12(vector<int> imput) {
 			temp = temp / 3 - 2;
 
 			if (temp > 0) fuel = fuel + temp;
-
 		}
 	}
 	return fuel;
 }
 
-
 int main() {
-
+	
 	std::vector<int> modules;
 	ifstream myFile;
 	int n;
