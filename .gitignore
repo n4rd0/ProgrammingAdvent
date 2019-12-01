@@ -3,3 +3,5 @@
 *.javac
 *.o
 *.out
+*.hi
+*.a
