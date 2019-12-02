@@ -42,7 +42,6 @@ std::vector<int> D21(std::vector<int> numbers){
 			default: cout << "ERROR" << endl;break;
 
 			}
-
 		}
 
 	return numbers;
@@ -87,8 +86,6 @@ int main() {
 
 	cout <<"Answer 1 = "<< res[0] << endl;
 	cout << "Answer 2 = " <<res2<<endl;
-
-
+	
 	return 0;
-
 }
