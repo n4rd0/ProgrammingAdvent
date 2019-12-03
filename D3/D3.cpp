@@ -83,7 +83,6 @@ std::vector<point> D31_2(vector<point> wire1, vector<point> wire2) {
 			int x = wire2[j].x;
 
 			if (x == search.x && y == search.y) {
-				//cout << "hola" << endl;
 				repeated.push_back(search);
 				search.step += wire2[j].step;
 				cout << search.x << " " << search.y<<" "<<search.step<< endl;
