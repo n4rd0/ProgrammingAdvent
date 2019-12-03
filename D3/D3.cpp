@@ -4,9 +4,14 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
-#include "point.h"
 
 using namespace std;
+
+struct point{
+int x;
+int y;
+int step;
+};
 
 std::vector<int> parseNums(string name) {
 	std::vector<int> numbers;
