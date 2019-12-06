@@ -56,5 +56,5 @@ def shortestPath():
 
 #Solutions
 
-print('Total number of orbits (Star 1):', numOrbits())
-print('Minimum number of orbital transfers to SAN (Star 2):', shortestPath())
+print('Star 1:', numOrbits())
+print('Star 2:', shortestPath())
