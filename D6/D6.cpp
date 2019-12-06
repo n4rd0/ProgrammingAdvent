@@ -149,11 +149,10 @@ int sndStar(std::map<std::string,std::string> mapI) {
 }
 int main(){
 	vector<string> orbitImput = parse();
-	vector<string> orbitImput2 = parse();
 	map<string, int> mapNameNumberOrbits = toMap(orbitImput);
 	map<string, string> directedOrbits = toMapString(orbitImput);
 	int res2 = sndStar(directedOrbits);
-	int res = fstStar(mapNameNumberOrbits,orbitImput2);
+	int res = fstStar(mapNameNumberOrbits,orbitImput);
 	cout << "Answer 1 = "<<res<<endl;
 	cout << "Answer 2 = " << res2 << endl;
 }
