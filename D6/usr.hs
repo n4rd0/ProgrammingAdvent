@@ -50,6 +50,6 @@ main = do
   contents <- getContents
   let ls = map (split ')' []) $ lines contents
 
-  print $ star1 ls
-  print $ star2 "YOU" "SAN" ls
+  putStrLn $ "Star 1: " ++ (show star1 ls)
+  putStrLn $ "Star 2: " ++ (star2 "YOU" "SAN" ls)
   
