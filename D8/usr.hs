@@ -1,7 +1,6 @@
 width = 25
 height = 6
 
---TODO: Use a foldl here
 count :: (Eq a) => [a] -> a -> Int
 count ls c = foldl (\acc c' -> if c' == c then acc + 1 else acc) 0 ls
 
