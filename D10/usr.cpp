@@ -15,16 +15,15 @@ struct Point
     int y;
 };
 
-int gcd(int a, int b) {
+const int gcd(int a, int b) {
     int d = b % a;
-    if (d == 0)
-        return a;
+    if (d == 0) return a;
     return gcd(d, a);
 }
 
-double atan(const Point p) {
+const double atan(const Point p) {
     if (p.x == 0)
-        return p.y < 0? -9999. : 9999.;
+        return p.y < 0? -99999. : 99999.;
     return (double) p.y / (double) p.x;
 }
 
@@ -72,6 +71,7 @@ std::vector<Point> parse() {
         }
         last.close();
 
+        //Add the dimensions at the end, useful for the sndStar
         vals.push_back((Point) {.x=j, .y=i});
     }
     else
@@ -82,7 +82,7 @@ std::vector<Point> parse() {
 
 
 Point normalize(int x, int y) {
-    if (x == 0) return (Point) {.x = 0, .y = y < 0? -1 : y == 0? 0 : 1};
+    if (x == 0) return (Point){.x=0, .y = y == 0? 0 : y < 0? -1 : 1};
     int g = gcd(std::abs(x), std::abs(y));
 
     return (Point) {.x = x / g, .y = y / g};
@@ -94,10 +94,12 @@ int bestPos(std::vector<Point> v, Point &best) {
 
     std::map<Point, bool> m_pt;
 
-    for (Point place : v)
+    //For each asteroid
+    for (const Point &place : v)
     {
         m_pt.clear();
-        for (Point p : v)
+        //Count how many asteroids are visible
+        for (const Point &p : v)
         {
             int vx = p.x - place.x, vy = p.y - place.y;
             Point dir = normalize(vx, vy);
@@ -125,11 +127,12 @@ Point destroy(std::vector<Point> v, int num) {
     Point from;
     bestPos(v, from);
 
-    for (Point p : v)
+    //Populate maps and dirs with the respective points and directions
+    for (const Point &p : v)
     {
         m_pt[p] = true;
-        if (!(p == from)){
-            int vx = p.x - from.x, vy = from.y - p.y;
+        if (!(p == from)) {
+            int vx = p.x - from.x, vy = from.y - p.y; //This is because (0,1) == down
             Point n = normalize(vx, vy);
             if (!m_ds[n]) {
                 dirs.push_back(n);
@@ -138,30 +141,35 @@ Point destroy(std::vector<Point> v, int num) {
         }
     }
 
+    //We sort the directions so that they are in clockwise order
     std::sort(dirs.begin(), dirs.end(), clockwise);
 
     Point lastDestroyed;
-    int i = 0, j = 0;
+    int i = 0, j = -1;
+    //Vaporize num + 1 asteroids
     while (i < num)
     {
         //Iterate through all the directions
-        bool exit = false;
-        while (!exit){
+        bool nextAsterFound = false;
+        while (!nextAsterFound){
+            j = (j+1) % dirs.size();
+            //We already know that there aren't more asteroids in this dir
+            if (!m_ds[dirs[j]]) continue;
+
             Point d = from + dirs[j];
 
             //Detect if there is a point in the direction
-            while (m_ds[dirs[j]] && d.x >= 0 && d.y >= 0 && d.x < xdim && d.y < ydim) {
+            while (d.x >= 0 && d.y >= 0 && d.x < xdim && d.y < ydim)
+            {
                 if (m_pt[d]) {
                     lastDestroyed = d;
                     m_pt.erase(d);
-                    exit = true;
+                    nextAsterFound = true;
                     break;
                 }
                 d = d + dirs[j];
             }
-            m_ds[dirs[j]] = exit;
-
-            j = (j+1) % dirs.size();
+            m_ds[dirs[j]] = nextAsterFound;
         }
 
         i++;
@@ -172,7 +180,7 @@ Point destroy(std::vector<Point> v, int num) {
 
 void fstStar(std::vector<Point> v){
 
-    v.pop_back(); //We dont need the dimensions
+    v.pop_back(); //We don't need the dimensions
     Point _p;
     int res = bestPos(v, _p);
     std::cout << "Fst: " << res << std::endl;
@@ -191,11 +199,11 @@ int main(){
     fstStar(v);
     auto endfst = std::chrono::high_resolution_clock::now();
     snm_dstar(v);
-    auto enm_dsnd = std::chrono::high_resolution_clock::now();
+    auto endsnd = std::chrono::high_resolution_clock::now();
 
 
     std::chrono::duration<double> elapsedFst = endfst - start;
-    std::chrono::duration<double> elapsem_dsnd = enm_dsnd - endfst;
+    std::chrono::duration<double> elapsem_dsnd = endsnd - endfst;
 
     std::cout << "Fst took: " << elapsedFst.count() << "; Snd took: " << elapsem_dsnd.count() << std::endl;
 }
