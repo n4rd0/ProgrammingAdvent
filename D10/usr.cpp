@@ -186,7 +186,7 @@ void fstStar(std::vector<Point> v){
     std::cout << "Fst: " << res << std::endl;
 }
 
-void snm_dstar(const std::vector<Point> &v){
+void sndStar(const std::vector<Point> &v){
 
     Point p = destroy(v, 199);
     std::cout << "Snd: " << p.x << ", " << p.y << std::endl;
@@ -198,12 +198,12 @@ int main(){
     auto start = std::chrono::high_resolution_clock::now();
     fstStar(v);
     auto endfst = std::chrono::high_resolution_clock::now();
-    snm_dstar(v);
+    sndStar(v);
     auto endsnd = std::chrono::high_resolution_clock::now();
 
 
     std::chrono::duration<double> elapsedFst = endfst - start;
-    std::chrono::duration<double> elapsem_dsnd = endsnd - endfst;
+    std::chrono::duration<double> elapsedSnd = endsnd - endfst;
 
-    std::cout << "Fst took: " << elapsedFst.count() << "; Snd took: " << elapsem_dsnd.count() << std::endl;
+    std::cout << "Fst took: " << elapsedFst.count() << "; Snd took: " << elapsedSnd.count() << std::endl;
 }
