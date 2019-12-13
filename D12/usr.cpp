@@ -114,17 +114,16 @@ void move(std::vector<Body> &b, int axis) {
 
 //We only need to compare that the positions are equal and that the speeds are 0
 bool compEq(std::vector<Body> &b, int init[numBodies], int axis) {
-    int speedAcc = 0;
     for (int i = 0; i < numBodies; ++i)
     {
-        if (b[i].pos[axis] != init[i]) return false;
-        speedAcc |= b[i].vel[axis];
+        if (b[i].pos[axis] != init[i] || b[i].vel[axis])
+            return false;
     }
 
-    return speedAcc == 0;
+    return true;
 }
 
-long calcLoop(std::vector<Body> b, int axis) {
+long determinePeriod(std::vector<Body> b, int axis) {
 
     //We know that the first to repeat will be the initial pos because
     //it is a biyective function, which means that f(a) = b <=> b = f-1(a)
@@ -133,16 +132,15 @@ long calcLoop(std::vector<Body> b, int axis) {
     int init[numBodies] = {};
     for (int i = 0; i < numBodies; ++i)
         init[i] = b[i].pos[axis];
-    long iter = 0;
-    bool areEq = false;
 
-    while (!areEq) {
+    long iter = 0;
+
+    do {
         simGrav(b, axis);
         move(b, axis);
 
-        areEq = compEq(b, init, axis);
         iter++;
-    }
+    } while (!compEq(b, init, axis));
 
     return iter;
 }
@@ -165,7 +163,7 @@ void fstStar(std::vector<Body> v){
 void sndStar(std::vector<Body> v){
 
     //Since the 3 axis are separate we just have to calculate the mcm of the period of each axis
-    long m = mcm(calcLoop(v, 2), calcLoop(v, 1), calcLoop(v, 0));
+    long m = mcm(determinePeriod(v, 2), determinePeriod(v, 1), determinePeriod(v, 0));
     std::cout << "Snd: " << m << std::endl;
 }
 
