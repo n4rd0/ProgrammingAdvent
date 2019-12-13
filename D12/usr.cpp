@@ -14,14 +14,14 @@ struct Body
     int vel[3];
 };
 
-//mcm and gcd can be expanded to multiple vars using foldls (accumulators)
+//lcm and gcd can be expanded to multiple vars using foldls (accumulators)
 const long gcd(long a, long b) {
     long d = a % b;
     if (d) return gcd(b, d);
     return b;
 }
 
-const long mcm(long x, long y, long z) {
+const long lcm(long x, long y, long z) {
     long mxy = x * y / gcd(x, y);
     long mxyz = z * mxy / gcd(z, mxy);
     return mxyz;
@@ -162,8 +162,8 @@ void fstStar(std::vector<Body> v){
 
 void sndStar(std::vector<Body> v){
 
-    //Since the 3 axis are separate we just have to calculate the mcm of the period of each axis
-    long m = mcm(determinePeriod(v, 2), determinePeriod(v, 1), determinePeriod(v, 0));
+    //Since the 3 axis are separate we just have to calculate the lcm of the period of each axis
+    long m = lcm(determinePeriod(v, 2), determinePeriod(v, 1), determinePeriod(v, 0));
     std::cout << "Snd: " << m << std::endl;
 }
 
