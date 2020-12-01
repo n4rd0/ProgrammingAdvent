@@ -1,5 +1,7 @@
+import fileinput
+
 def star1(inp):
-	for num in inp:
+	for i in range(len(inp)-1):
 		last = inp.pop()
 		for num in inp:
 			if num + last == 2020:
@@ -14,9 +16,8 @@ def star2(inp):
 				if num + other + last == 2020:
 					return num*last*other
 
-with open("input1.txt") as f:
-	inp = [int(line) for line in f.read().splitlines()]
-	f.close()
+
+inp = [int(line) for line in fileinput.input()]
 	
 print("Star 1:",star1(inp))
 print("Star 2:",star2(inp))
