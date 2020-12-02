@@ -18,29 +18,27 @@ with open(file,"r") as f:
 				else:
 					numeros_odd.append(numeros_temp)
 
-#buscamos dos numeros que sumados den 2020, esto solo puede pasar entre
-#par y par 1000+1000, impar impar 1997+3, nunca entre par + impar ya que esto siempre
-#da como resultado un impar
+#buscamos dos numeros que sumados den 2020, esto solo puede pasar entrepar y par 1000+1000, impar impar 1997+3, nunca entre par + impar ya que esto siempreda como resultado un impar
 
 def fstStar(pair,odd):
 	res = 0
 	n1 = 0
 	n2 = 0
 
-	for i in range(0, len(pair)):
+	for i in range(len(pair)):
 		n1 = pair[i]
     
-		for j in range(0, len(pair)):
+		for j in range(len(pair)):
 			n2 = pair[j]
 
 			if n1 + n2 == 2020:
 				res = n1*n2
 				return res
 
-	for i in range(0, len(odd)):
+	for i in range(len(odd)):
 		n1 = odd[i]
 
-		for j in range(0, len(odd)):
+		for j in range(len(odd)):
 			n2 = odd[j]
 
 			if n1 + n2 == 2020:
@@ -49,34 +47,33 @@ def fstStar(pair,odd):
 
 	return res
 
-#buscamos tres numeros que sumados den 2020, esto solo puede pasar entre
-#par impar impar, par par par 
+#buscamos tres numeros que sumados den 2020, esto solo puede pasar entrepar impar impar, par par par 
 
 def sndStar(pair,odd):
 	res = 0
 	n1 = 0
 	n2 = 0
 
-	for i in range(0, len(pair)):
+	for i in range(len(pair)):
 		n1 = pair[i]
 
-		for j in range(0, len(pair)):
+		for j in range(len(pair)):
 			n2 = pair[j]
 
-			for k in range(0, len(pair)):
+			for k in range(len(pair)):
 				n3 = pair[k]
 
 				if n1 + n2 +n3== 2020:
 					res = n1*n2*n3
 					return res
 
-	for i in range(0, len(pair)):
+	for i in range(len(pair)):
 		n1 = pair[i]
 
-		for j in range(0, len(odd)):
+		for j in range(len(odd)):
 			n2 = odd[j]
 
-			for k in range(0, len(odd)):
+			for k in range(len(odd)):
 				n3 = odd[k]
 
 				if n1 + n2 +n3== 2020:
