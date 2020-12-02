@@ -1,22 +1,20 @@
 import fileinput
 import re
 
-def star1():
-	counter = 0
-	for line in inp:
-		if line[0] <= line[3].count(line[2]) <= line[1]:
-			counter+=1
-	return counter
+def policy1(minOcurr, maxOcurr, letter, code):
+	return minOcurr <= code.count(letter) <= maxOcurr
 
-def star2():
-	counter = 0
-	for line in inp:
-		if (line[3][line[0]-1] == line[2]) ^ (line[3][line[1]-1] == line[2]):
-			counter+=1
-	return counter
+def policy2(pos1, pos2, letter, code):
+	return (code[pos1-1] == letter) ^ (code[pos2-1] == letter)
 
 inp = [re.split(r":\s|[-\s]", line.rstrip()) for line in fileinput.input()]
 inp = [(int(line[0]), int(line[1]), line[2], line[3]) for line in inp]
 
-print("Star 1:", star1())
-print("Star 2:", star2())
+counterStar1 = 0
+counterStar2 = 0
+for (arg1, arg2, letter, code) in inp:
+	counterStar1 += policy1(arg1, arg2, letter, code)
+	counterStar2 += policy2(arg1, arg2, letter, code)
+
+print("Star 1:", counterStar1)
+print("Star 2:", counterStar2)
