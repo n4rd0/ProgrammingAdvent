@@ -1,3 +1,4 @@
+from operator import mul
 from functools import reduce
 from math import ceil
 
@@ -8,7 +9,8 @@ def star1(inp):
 	return sumTrees(3, 1, inp)
 
 def star2(inp):
-	return reduce(lambda x,y:x*y, [sumTrees(dx, dy, inp) for (dx, dy) in [(1,1),(3,1),(5,1),(7,1),(1,2)] ])
+	slopes = [(1,1),(3,1),(5,1),(7,1),(1,2)]
+	return reduce(mul, [sumTrees(dx, dy, inp) for (dx, dy) in slopes])
 
 with open("input3.txt") as f:
 	inp = f.read().splitlines()
