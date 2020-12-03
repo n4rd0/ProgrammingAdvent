@@ -18,7 +18,7 @@ with open(file,"r") as f:
 				else:
 					numeros_odd.append(numeros_temp)
 
-#buscamos dos numeros que sumados den 2020, esto solo puede pasar entrepar y par 1000+1000, impar impar 1997+3, nunca entre par + impar ya que esto siempreda como resultado un impar
+#buscamos dos numeros que sumados den 2020, esto solo puede pasar entre par y paro impar impar 
 
 def fstStar(even,odd):
 	res = 0
@@ -47,7 +47,7 @@ def fstStar(even,odd):
 
 	return res
 
-#buscamos tres numeros que sumados den 2020, esto solo puede pasar entrepar impar impar, par par par 
+#buscamos tres numeros que sumados den 2020, esto solo puede pasar entre par impar impar, par par par 
 
 def sndStar(even,odd):
 	res = 0
