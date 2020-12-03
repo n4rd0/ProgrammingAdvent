@@ -2,7 +2,7 @@
 
 file = "D1.txt"
 numeros_temp = 0
-numeros_pair = []
+numeros_even = []
 numeros_odd = []
 
 with open(file,"r") as f:
@@ -14,22 +14,22 @@ with open(file,"r") as f:
 				numeros_temp = int(numeros_temp)
 
 				if numeros_temp%2 == 0 :
-					numeros_pair.append(numeros_temp)
+					numeros_even.append(numeros_temp)
 				else:
 					numeros_odd.append(numeros_temp)
 
 #buscamos dos numeros que sumados den 2020, esto solo puede pasar entrepar y par 1000+1000, impar impar 1997+3, nunca entre par + impar ya que esto siempreda como resultado un impar
 
-def fstStar(pair,odd):
+def fstStar(even,odd):
 	res = 0
 	n1 = 0
 	n2 = 0
 
-	for i in range(len(pair)):
-		n1 = pair[i]
+	for i in range(len(even)):
+		n1 = even[i]
     
-		for j in range(len(pair)):
-			n2 = pair[j]
+		for j in range(len(even)):
+			n2 = even[j]
 
 			if n1 + n2 == 2020:
 				res = n1*n2
@@ -49,26 +49,26 @@ def fstStar(pair,odd):
 
 #buscamos tres numeros que sumados den 2020, esto solo puede pasar entrepar impar impar, par par par 
 
-def sndStar(pair,odd):
+def sndStar(even,odd):
 	res = 0
 	n1 = 0
 	n2 = 0
 
-	for i in range(len(pair)):
-		n1 = pair[i]
+	for i in range(len(even)):
+		n1 = even[i]
 
-		for j in range(len(pair)):
-			n2 = pair[j]
+		for j in range(len(even)):
+			n2 = even[j]
 
-			for k in range(len(pair)):
-				n3 = pair[k]
+			for k in range(len(even)):
+				n3 = even[k]
 
 				if n1 + n2 +n3== 2020:
 					res = n1*n2*n3
 					return res
 
-	for i in range(len(pair)):
-		n1 = pair[i]
+	for i in range(len(even)):
+		n1 = even[i]
 
 		for j in range(len(odd)):
 			n2 = odd[j]
