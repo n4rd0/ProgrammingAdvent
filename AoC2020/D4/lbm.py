@@ -13,22 +13,23 @@ def parseInput(inp):
 
 	return inp
 
-def star1(inp):
-	return sum(1 if len(passport) == 7 else 0 for passport in inp)
-
-def star2(inp):
-	counter = 0
+def stars(inp):
+	star1, star2 = 0, 0
 	
 	for passport in inp:
-		isValid = True
-		for spec in passport:
-			if checkInvalid[spec](passport[spec]):
-				isValid = False
-				break
-		if isValid and len(passport) == 7:
-			counter += 1
+		if len(passport) < 7:
+			continue
+		else:
+			star1 += 1
+			isValid = True
+			for spec in passport:
+				if checkInvalid[spec](passport[spec]):
+					isValid = False
+					break
+			if isValid:
+				star2 += 1
 
-	return counter
+	return (star1, star2)
 
 def isHgtInvalid(val):
 	if re.search(r"^[0-9]+(cm|in)$",val) == None:
@@ -50,5 +51,6 @@ checkInvalid = {
 with open("input4.txt") as f:
 	inp = parseInput(f.read())
 
-print("Star 1:", star1(inp))
-print("Star 2:", star2(inp))
+(star1, star2) = stars(inp)
+print("Star 1:", star1)
+print("Star 2:", star2)
