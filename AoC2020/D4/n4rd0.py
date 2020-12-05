@@ -87,16 +87,10 @@ def scndStar(list):
 				counter_id = 0
 				passport_id = valid_passports[i][j+4:j+14].strip()
 
-				for k in range(len(passport_id)):
 
-					if passport_id[k] != "0" and passport_id[k] != "1" and passport_id[k] != "2" and passport_id[k] != "3" and passport_id[k] != "4" and passport_id[k] != "5" and passport_id[k] != "6" and passport_id[k] != "7" and passport_id[k] != "8" and passport_id[k] != "9":
-						counter_id = counter_id
-					else:
-						counter_id = counter_id +1
-
-				if counter_id == 9 : 
-					counter = counter +1
-
+				if  passport_id.isnumeric() and len(passport_id) == 9:
+					counter = counter + 1 
+		
 		if counter == 7:
 			res = res + 1
 		counter = 0
