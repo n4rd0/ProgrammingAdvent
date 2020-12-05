@@ -59,5 +59,5 @@ main = do
   contents <- getContents
   let ls = lines contents
   let p = map words $ parse ls ""
-  print $ star1 p
-  print $ star2 p
+  putStrLn $ "Star 1: " ++ (show $ star1 p)
+  putStrLn $ "Star 2: " ++ (show $ star2 p)
