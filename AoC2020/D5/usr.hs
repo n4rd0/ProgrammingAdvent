@@ -1,4 +1,4 @@
-import qualified Data.List as L
+import qualified Data.Set as Set
 
 type Seat = (Int, Int)
 
@@ -12,14 +12,15 @@ seat :: String -> Seat
 seat ss = (row', col')
   where
     (row,col) = splitAt 7 ss
-    row' = toBin $ map (\x-> if x == 'B' then 1 else 0) row
-    col' = toBin $ map (\x-> if x == 'R' then 1 else 0) col
+    aux f = (\x -> if f x then 1 else 0)
+    row' = toBin $ map (aux (=='B')) row
+    col' = toBin $ map (aux (=='R')) col
 
 star1 = maximum . map (sId . seat)
-star2 ls = head availableSeats
+star2 ls = Set.elemAt 0 availableSeats
   where
     seats = map (sId . seat) ls
-    availableSeats = [(minimum seats)..(maximum seats)] L.\\ seats
+    availableSeats = (Set.fromList [(minimum seats)..(maximum seats)]) Set.\\ (Set.fromList seats)
 
 main :: IO ()
 main = do
