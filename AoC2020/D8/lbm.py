@@ -19,7 +19,7 @@ def star2(inp, i = 0):
 	isNop = True if inp[i][instr] == nop else False
 	inp[i][instr] = jmp if isNop else nop
 
-	isTerminated, accum = star1(inp, 0, 0, set())
+	isTerminated, accum = star1(inp)
 
 	if isTerminated:
 		return accum
