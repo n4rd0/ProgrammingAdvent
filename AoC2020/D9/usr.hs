@@ -4,16 +4,15 @@ sums :: [Int] -> [Int]
 sums (l:ls) = map (+l) ls ++ sums ls
 sums _ = []
 
-findRange :: Int -> [Int] -> Int -> [Int]
-findRange target nss@(n:ns) i = if s == target
-    then range
-    else if s < target
-        then findRange target nss (i+1)
-        else findRange target ns 2
+findRange :: Int -> [Int] -> [Int] -> Int -> [Int] -> [Int]
+findRange target nss@(n:ns) (r:rest) s range = if s' == target
+    then r:range
+    else if s' < target
+        then findRange target nss rest s' (r:range)
+        else findRange target ns ns 0 []
         where
-            range = take i nss
-            s = sum range
-findRange _ [] _ = error "Can't find range"
+            s' = s + r
+findRange _ [] _ _ _ = error "Can't find range"
 
 --Lists are better than sets due to the sizes used here
 
@@ -24,8 +23,7 @@ star1 nums
         (b:bef,a:after) = splitAt preamble nums
 
 star2 nums = minimum range + maximum range
-    where
-        range = findRange (star1 nums) nums 2
+    where range = findRange (star1 nums) nums nums 0 []
 
 preamble = 25
 
