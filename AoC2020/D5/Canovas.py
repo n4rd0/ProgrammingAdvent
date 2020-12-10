@@ -11,8 +11,6 @@ def secondStar(list_seats):
 	return sum(range(min(list_seats_b10),max(list_seats_b10)+1)) - sum(list_seats_b10)
 
 
-
-
 with open('input.txt') as file:
 	input_list = file.read()
 
