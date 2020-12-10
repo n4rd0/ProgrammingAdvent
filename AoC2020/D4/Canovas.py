@@ -1,6 +1,6 @@
 import re
 
-def firstStar(list_passports,necessary_data,parameters):
+def bothStars(list_passports,necessary_data,parameters):
 	valid_passports_1 = 0
 	valid_passports_2 = 0
 
@@ -37,4 +37,4 @@ parameters = {
 with open('input.txt') as file:
 	input_list = file.read().split("\n\n")
 
-print(firstStar(input_list,necessary_data,parameters))
+print(bothStars(input_list,necessary_data,parameters))
