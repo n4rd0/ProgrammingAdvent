@@ -3,10 +3,10 @@ import Data.List (sort)
 import Data.Maybe (fromJust)
 
 continuations :: [Int] -> [[Int]]
-continuations (x:xs) = (takeWhile ((<=3) . (+(-x))) xs) : continuations xs
+continuations (x:xs) = takeWhile ((<=3) . (+(-x))) xs : continuations xs
 continuations _ = []
 
-paths :: Map.Map Int [Int] -> [Int] -> Map.Map Int Int -> Map.Map Int Int
+paths :: Map.Map Int [Int] -> [Int] -> Map.Map Int Integer -> Map.Map Int Integer
 paths m (n:ns) acc = paths m ns (Map.insert n tot acc)
     where
         tot = if lookup == 0 then 1 else lookup --The if is for the last num
@@ -28,7 +28,7 @@ star2 ls' = foldr retrieve 0 [1,2,3]
         m = paths conts (reverse ls) Map.empty
         retrieve n acc = case n `Map.lookup` m of 
             Just res -> acc + res
-            Nothing -> 0
+            Nothing -> acc
 
 main :: IO ()
 main = do
