@@ -25,9 +25,9 @@ def bothStars(list_passports,necessary_data,parameters):
 necessary_data = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
 
 parameters = {
-	"byr" : lambda x : bool(re.match(r"(19[2-9][0-9]|200[0-2])$",x)),
-	"iyr" : lambda x : bool(re.match(r"(201[0-9]|2020)$",x)),
-	"eyr" : lambda x : bool(re.match(r"(202[0-9]|2030)$",x)),
+	"byr" : lambda x : 1920 <= int(x) <= 2002 ,
+	"iyr" : lambda x : 2010 <= int(x) <= 2020,
+	"eyr" : lambda x : 2020 <= int(x) <= 2030,
 	"hgt" : lambda x : bool(re.match(r"(1[5-8][0-9]|19[0-3])cm$|(59|6[0-9]|7[0-6])in$",x)),
 	"hcl" : lambda x : bool(re.match(r"#[0-9a-f]{6}$",x)),
 	"ecl" : lambda x : bool(re.match(r"(amb|blu|brn|gry|grn|hzl|oth)$",x)),
