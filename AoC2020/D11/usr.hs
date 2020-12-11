@@ -1,5 +1,4 @@
 import qualified Data.Map as Map
-import Data.Maybe (fromJust)
 
 data Cell = Floor | Occupied | Empty deriving (Show, Eq)
 
@@ -46,7 +45,7 @@ findStableConfig m changeCriteria countOneDirection d = if same then nxtM else f
         nxtM = Map.fromList nxtLs
         (nxtLs,same) = update m changeCriteria (countOneDirection m) d (0,0) [] True
 
-star a b c d = length $ filter (==Occupied) $ (Map.elems) $ findStableConfig a b c d
+star m changeCriteria countOneDirection dimentions = length $ filter (==Occupied) $ (Map.elems) $ findStableConfig m changeCriteria countOneDirection dimentions
 
 main :: IO ()
 main = do
