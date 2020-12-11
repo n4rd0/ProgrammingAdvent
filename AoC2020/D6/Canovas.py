@@ -20,7 +20,7 @@ def bothStars(list_answers):
 
 
 with open('input.txt') as file:
-	input_list = file.read().split("\n\n")
+	input_list = file.read().strip("\n").split("\n\n")
 
 print(input_list)
 print(bothStars(input_list))
