@@ -1,27 +1,88 @@
-from functools import reduce
+cardinalToComplexDirection = {'N': 0 + 1j, 'E': 1 + 0j, 'S': 0 - 1j, 'W': -1 + 0j}
 
-def updateShips(acc, x):
-	instr, val = x
-	ship1, ship2, currentOrientation, wayPoint = acc
-	if instr == 'N' or instr == 'E' or instr == 'S' or instr == 'W':
-		move = val * dirs[instr]
-		ship1, wayPoint = ship1 + move, wayPoint + move
-	elif instr == 'F':
-		ship1, ship2 = ship1 + val * currentOrientation, ship2 + val * wayPoint
-	else:
-		direction = 1 if instr == 'L' else -1
-		rotation = (direction*1j)**val
-		currentOrientation, wayPoint = currentOrientation * rotation, wayPoint * rotation
-		
-	return [ship1, ship2, currentOrientation, wayPoint]
+def getInputInstructions(path):
+
+	with open(path) as f:
+
+		instructions = []
+
+		for rawInstruction in f.read().splitlines():
+
+			# Input lines are a character followed by a number
+			# e.g. F40
+
+			direction = rawInstruction[0]
+			amount = int(rawInstruction[1:])
+
+			instructions.append((direction, amount))
+
+	return instructions
+
+
+
+def getManhattanDistanceAfterInstructions(instructions):
+	# Ship 1 is star 1, ship 2 is star 2
+	ship1Position = ship2Position = 0 + 0j
+
+	orientationShip1 = 1 + 0j
+
+	wayPointLocationRelativeToShip2 = 10 + 1j
+
+	for (instruction, amount) in instructions:
+
+		if instruction == 'L' or instruction == 'R':
+			
+			orientationShip1 *= getRotation(instruction, amount)
+			wayPointLocationRelativeToShip2 *= getRotation(instruction, amount)
+
+		elif instruction == 'F':
+
+			ship1Position += stepToMoveFromComplexDirection(orientationShip1, amount)
+			ship2Position += stepToMoveFromComplexDirection(wayPointLocationRelativeToShip2, amount)
+
+		# N, E, S, W
+		else:
+
+			ship1Position += stepToMoveFromCardinalDirection(instruction, amount)
+			wayPointLocationRelativeToShip2 += stepToMoveFromCardinalDirection(instruction, amount)
+
+
+	ship1ManhattanDistance = manhattanDistanceFromComplexNumber(ship1Position)
+	ship2ManhattanDistance = manhattanDistanceFromComplexNumber(ship2Position)
+
+	return ship1ManhattanDistance, ship2ManhattanDistance
+
+
+
+def stepToMoveFromCardinalDirection(direction, amount):
+
+	return amount * cardinalToComplexDirection[direction]
+
+
+def stepToMoveFromComplexDirection(direction, amount):
+
+	return amount * direction
+
+
+def getRotation(rotationDirection, degrees):
+
+	# Sign that will come with i
+	# Product by i is 90 degrees counterclockwise ('left')
+	# Product by -i is 90 degrees clockwise ('right')
+
+	rotationSign = 1 if rotationDirection == 'L' else -1
+
+	multipleOf90 = degrees // 90
+
+	return (rotationSign * 1j) ** multipleOf90
 	
-def manhattan(cmplx):
-	return int(abs(cmplx.real) + abs(cmplx.imag))
 
-with open("input12.txt") as f:
-	inp = [(instr[0], int(instr[1:]) if instr[0]!='L' and instr[0]!='R' else int(instr[1:])//90) for instr in f.read().splitlines()]
+def manhattanDistanceFromComplexNumber(cmplx):
+	return int( abs(cmplx.real) + abs(cmplx.imag) )
 
-dirs = {'N': 0 + 1j, 'E': 1 + 0j, 'S': 0 - 1j, 'W': -1 + 0j}
-ship1, ship2, _, _ = reduce(updateShips, inp, [0+0j, 0+0j, 1+0j, 10+1j])
-print("Star 1:", manhattan(ship1))
-print("Star 2:", manhattan(ship2))
+
+
+ship1ManhattanDistance, ship2ManhattanDistance = getManhattanDistanceAfterInstructions(getInputInstructions("input12.txt"))
+
+print("Star 1:", ship1ManhattanDistance)
+print("Star 2:", ship2ManhattanDistance)
