@@ -1,13 +1,11 @@
 import Data.List.Split (splitOn)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, catMaybes)
 
 --gist.github.com/lovasoa/0e52bcbc937f3d26224f303669ca2b0f
-inverse b a =
-  let
-    next a b = zipWith (-) a $ map (*(head $ zipWith div a b)) b
-    l = [a,0] : [b,1] : zipWith next l (tail l)
-  in
-    head $ tail $ head $ filter ((==1).head) l
+inverse b a = head $ tail $ head $ filter ((==1).head) l
+    where
+        next a b = zipWith (-) a $ map (*(head $ zipWith div a b)) b
+        l = [a,0] : [b,1] : zipWith next l (tail l)
 
 --Chinese Remainder Theorem algorithm
 crt :: ([Integer], [Integer]) -> Integer
@@ -18,18 +16,13 @@ crt (remainders, mods) = sumation `mod` modProd
         ts = map (\x -> modProd `div` x) mods
         inverses = zipWith inverse ts mods
 
-star1 depart ls = wait * busID
-    where
-        (wait,busID) = (minimum . toWaitIDPair) ls'
-        ls' = foldr remNothing [] ls
-        remNothing Nothing acc = acc
-        remNothing (Just a) acc = a:acc
-        toWaitIDPair = map (\x -> (x - (depart `mod` x),x))
+star1 depart = uncurry (*) . minimum . toWaitIDPair . catMaybes
+    where toWaitIDPair = map (\x -> (x - (depart `mod` x),x))
 
-star2 ls = (crt . unzip . convert . zip [0,(-1)..]) ls
+star2 = crt . unzip . convert . zip [0,-1..]
     where
         justs = filter (\(_,y) -> y /= Nothing)
-        toRemModuloPair = (\(x,y) -> ((y+x) `mod` y, y)).(\(x,y)->(x,fromJust y))
+        toRemModuloPair = (\(x,y) -> ((y+x) `mod` y, y)) . (\(x,y)->(x,fromJust y))
         convert = map toRemModuloPair . justs
 
 main :: IO ()
