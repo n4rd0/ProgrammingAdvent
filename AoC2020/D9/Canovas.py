@@ -32,5 +32,8 @@ def secondStar(list_numbers,invalid_number):
 with open('input.txt') as file:
 	input_list = list(map(int,file.readlines()))
 
-print(firstStar(input_list,25))
-print(secondStar(input_list,1038347917))
+
+invalid_number = firstStar(input_list,25)
+
+print(invalid_number)
+print(secondStar(input_list,invalid_number))
