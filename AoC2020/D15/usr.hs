@@ -1,11 +1,7 @@
 import qualified Data.Map as Map
 import qualified Data.HashTable.IO as H
 import Data.List.Split (splitOn)
-import Data.Maybe (fromJust)
-
-star num ls = findVal num m 0
-    where
-        m = Map.fromList $ zip ls [1..]
+import Data.Maybe (fromMaybe)
 
 next :: Int -> Map.Map Int Int -> Int -> (Int, Map.Map Int Int)
 next turn m num = (numberSpoken, Map.insert num turn m)
@@ -19,7 +15,7 @@ findVal target m lastNum = aux nextTurn m lastNum
         nextTurn = map next [Map.size m + 1..target - 1]
         aux (f:fs) m lastN = aux fs m' lastN'
             where (lastN',m') = f m lastN
-        aux [] m last = last
+        aux [] _ lastN = lastN
 
 --The previous approach runs out of memory very fast,
 -- I guess that it keeps old Maps in memory
@@ -56,17 +52,16 @@ findVal' (from,to) m lastNum = aux (from+1) m lastNum
 next' :: Int -> HashTable Int Int -> Int -> IO (Int, HashTable Int Int)
 next' turn m num = do
     maybeLastTime <- H.lookup m num
-    let lastTime = getVal maybeLastTime turn
+    let lastTime = fromMaybe turn maybeLastTime
     let numberSpoken = turn - lastTime
     H.insert m num turn
     return (numberSpoken, m)
 
-getVal (Just a) _ = a
-getVal Nothing turn = turn
-
 star' num ls = do
     m <- genHT num ls
     findVal' (length ls, num) m 0
+
+star num ls = findVal num (Map.fromList $ zip ls [1..]) 0
 
 main :: IO ()
 main = do
@@ -77,7 +72,6 @@ main = do
   --putStrLn $ "Star 2: " ++ (show $ star (3*10^7) ls)
 
   s1 <- star' 2020 ls
-  putStrLn $ "Star 1: " ++ (show $ s1)
-  
+  putStrLn $ "Star 1: " ++ (show s1)
   s2 <- star' (3*10^7) ls
-  putStrLn $ "Star 2: " ++ (show $ s2)
+  putStrLn $ "Star 2: " ++ (show s2)
