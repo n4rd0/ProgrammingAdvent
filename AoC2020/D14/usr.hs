@@ -95,5 +95,5 @@ main = do
   let ls = lines contents
   let l = map (parse . splitOn " = ") ls
 
-  putStrLn $ "Star 1: " ++ (show $ star1 l == 11612740949946)
-  putStrLn $ "Star 2: " ++ (show $ star2 l == 3394509207186)
+  putStrLn $ "Star 1: " ++ (show $ star1 l)
+  putStrLn $ "Star 2: " ++ (show $ star2 l)
