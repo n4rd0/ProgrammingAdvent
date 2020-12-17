@@ -4,13 +4,15 @@ import Data.List (delete)
 type Coord = [Int]
 type Cell = Int
 
+dimension = 4
+
 -- 16 in 4d = 1+2*3+9+0*27 = [0,1,0,-1]
 toDirection :: Int -> Coord
-toDirection = reverse . take 4 . map (\x -> x `mod` 3 - 1) . iterate d
+toDirection = reverse . take dimension . map (\x -> x `mod` 3 - 1) . iterate d
     where d = (flip div) 3
 
-possibleDirections1 = delete [0,0,0,0] $ map toDirection [1,4..80]
-possibleDirections2 = delete [0,0,0,0] $ map toDirection [0..80]
+possibleDirections1 = delete (replicate dimension 0) $ map toDirection [1,4..3^4-1]
+possibleDirections2 = delete (replicate dimension 0) $ map toDirection [0..3^4-1]
 
 --Bri ish spelling
 getNeighbours :: [Coord] -> Coord -> [Coord]
@@ -39,7 +41,7 @@ main = do
   let ls = map (map (fromEnum . (=='#'))) $ lines contents
   let rows = length ls
   let cols = length $ head ls
-  let coords = map (\(x,y)->[y,x,0,0]) $ (foldr1 (++) . map (zip [0..cols-1] . repeat)) [0..rows-1]
+  let coords = map (\(x,y)->[y,x] ++ replicate (dimension - 2) 0) $ (foldr1 (++) . map (zip [0..cols-1] . repeat)) [0..rows-1]
   let m = onlyActiveCells $ Map.fromList $ zip coords (foldr1 (++) ls)
 
   putStrLn $ "Star 1: " ++ (show $ star possibleDirections1 m)
