@@ -1,39 +1,37 @@
 import qualified Data.Map.Strict as Map
 import Data.List (delete)
 
-type Coord = (Int,Int,Int,Int)
+type Coord = [Int]
+type Cell = Int
 
+-- 16 in 4d = 1+2*3+9+0*27 = [0,1,0,-1]
 toDirection :: Int -> Coord
-toDirection x = ((d . d . d) x `mod` 3 - 1, (d . d) x `mod` 3 - 1, d x `mod` 3 - 1, x `mod` 3 - 1)
+toDirection = reverse . take 4 . map (\x -> x `mod` 3 - 1) . iterate d
     where d = (flip div) 3
 
-possibleDirections1 = delete (0,0,0,0) $ map toDirection [1,4..80]
-possibleDirections2 = delete (0,0,0,0) $ map toDirection [0..80]
-
-addDir :: Coord -> Coord -> Coord
-addDir (x,y,z,w) (x',y',z',w') = (x+x',y+y',z+z',w+w')
+possibleDirections1 = delete [0,0,0,0] $ map toDirection [1,4..80]
+possibleDirections2 = delete [0,0,0,0] $ map toDirection [0..80]
 
 --Bri ish spelling
 getNeighbours :: [Coord] -> Coord -> [Coord]
-getNeighbours ls c = map (addDir c) ls
+getNeighbours ls c = map (zipWith (+) c) ls
 
-updateCell :: Int -> Int -> Int
+updateCell :: Cell -> Int -> Cell
 updateCell 1 2 = 1
 updateCell _ 3 = 1
 updateCell _ _ = 0
 
-newCellVal :: [Coord] -> Map.Map Coord Int -> Coord -> Int
-newCellVal dirs m coord = updateCell (aux coord) (sum $ map aux $ getNeighbours dirs coord)
-    where aux k = Map.findWithDefault 0 k m
+next :: [Coord] -> Map.Map Coord Cell -> Map.Map Coord Cell
+next dirs m = onlyActiveCells $ Map.mapWithKey update tileToActiveNeighbours
+    where
+        update coord cellState = updateCell (getCellState coord m) cellState
+        listOfNeighbours = map (getNeighbours dirs) $ Map.keys m
+        tileToActiveNeighbours = foldr1 (Map.unionWith (+)) $ map (Map.fromList . map (\x -> (x,1))) $ listOfNeighbours
 
-next :: [Coord] -> Map.Map Coord Int -> Map.Map Coord Int
-next dirs m = onlyActiveCells $ Map.mapWithKey (\coord val -> newCellVal dirs m coord) nmap
-    where nmap = Map.fromList $ map (\x -> (x,0)) $ foldr1 (++) $ map (getNeighbours dirs) $ Map.keys m
-
+getCellState k = Map.findWithDefault 0 k
 onlyActiveCells = Map.filter (==1)
-applyNTimes n f a = foldr (\_ acc -> f acc) a [1..n]
 
-star dirs = Map.size . applyNTimes 6 (next dirs)
+star dirs = Map.size . (!! 6) . iterate (next dirs)
 
 main :: IO ()
 main = do
@@ -41,7 +39,7 @@ main = do
   let ls = map (map (fromEnum . (=='#'))) $ lines contents
   let rows = length ls
   let cols = length $ head ls
-  let coords = map (\(x,y)->(y,x,0,0)) $ (foldr1 (++) . map (zip [0..cols-1] . repeat)) [0..rows-1]
+  let coords = map (\(x,y)->[y,x,0,0]) $ (foldr1 (++) . map (zip [0..cols-1] . repeat)) [0..rows-1]
   let m = onlyActiveCells $ Map.fromList $ zip coords (foldr1 (++) ls)
 
   putStrLn $ "Star 1: " ++ (show $ star possibleDirections1 m)
