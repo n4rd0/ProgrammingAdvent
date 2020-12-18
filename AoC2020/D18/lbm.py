@@ -55,7 +55,7 @@ B  -> C C'
 C' -> + B | lambda
 C  -> ( A ) | num
 
-where num in 0-9 and X' is written as XX
+where num is a positive integer and X' is written as XX
 """
 
 def A():
