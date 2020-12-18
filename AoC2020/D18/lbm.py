@@ -1,8 +1,6 @@
 import re
 from operator import add, mul
 
-import time
-
 char_to_op = {'+' : add, '*' : mul}
 
 
@@ -96,11 +94,8 @@ def read_next():
 	global current_expr
 	current_expr = current_expr[1:]
 
-start = time.time()
+
 inp = parse_input()
 
 print("Star 1:", star_1(inp))
 print("Star 2:", star_2(inp))
-end = time.time()
-
-print(end-start)
