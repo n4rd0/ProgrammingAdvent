@@ -3,117 +3,72 @@
 #include <string>
 #include <chrono>
 
-struct Node
+void showLL(const std::vector<int> &v)
 {
-    int val;
-    Node* next;
-};
-
-void genLinkedList(std::vector<int> &v, Node* head)
-{
-    Node* temp = head;
-    Node* nNode;
-
-    for (int i = 1; i < v.size(); ++i) {
-        nNode = (Node*)malloc(sizeof(Node));
-        nNode->val = v[i];
-        temp->next = nNode;
-        temp = nNode;
-    }
-    nNode->next = head;
-}
-
-int getDestination(int i, Node* first, Node* next, const int max, int iter)
-{
-    if (i == 0) {
-        return getDestination(max,first,next,max,iter);
-    }
-    if (iter == 0) {
-        return i;
-    }
-
-    if (next->val == i) {
-        return getDestination(i-1,first,first,max,3);
-    } else {
-        return getDestination(i,first,next->next, max, iter-1);
-    }
-}
-
-void showLL(Node* current) {
-    int fstVal = current->val;
+    int current = v[1];
     do {
-        if (fstVal != current->val)
-            std::cout << current->val;
-        current = current->next;
-    } while (current->val != fstVal);
+        std::cout << current;
+        current = v[current];
+    } while (1 != current);
     std::cout << std::endl;
 }
 
-Node* findDestination(Node* head, int val)
+std::vector<int> genVector(const std::vector<int> &v)
 {
-    Node* current = head;
-    while (current->val != val) {
-        current = current->next;
+    std::vector<int> res(v.size()+1);
+    res[0] = 0;
+    int prev = v[0];
+    for (int i = 1; i < v.size(); ++i) {
+        res[prev] = v[i];
+        prev = v[i];
     }
 
-    return current;
+    res[v[v.size()-1]] = v[0];
+
+    return res;
 }
 
-Node* next(Node* a, int times)
+int getDestination(int val, int i, const std::vector<int> &v, const int max)
 {
-    for (int i = 0; i < times; ++i) {
-        a = a->next;
-    }
-    return a;
+    if (val == 0)
+        val = max;
+
+    if (i == val || v[i] == val || v[v[i]] == val)
+        return getDestination(val-1, i, v, max);
+
+    return val;
 }
 
-void insert(Node* a, Node* b) {
-    a->next = b;
-}
-
-void calculate(std::vector<int> &v, const int iters, const int star)
+void calculate(const std::vector<int> &list, const int iters, const int star)
 {
-    Node head = (Node) {.val = v[0],.next = NULL};
-    genLinkedList(v,&head);
-    Node* current = &head;
-    Node* destinationNode;
-    int destination;
-
-    std::vector<Node*> pos(v.size()+1);
-    pos[0] = NULL;
-
-    do {
-        pos[current->val] = current;
-        current = current->next;
-    } while (current->val != head.val);
+    std::vector<int> v = genVector(list);
+    int current = list[0];
+    int destination, next, ending;
+    int maxVal = v.size()-1;
 
     for (int i = 0; i < iters; ++i) {
-        destination = getDestination(current->val-1, current->next, current->next, v.size(), 3);
-        destinationNode = pos[destination];
-        Node* ending = next(current,3);
-        Node* nextNode = ending->next;
+        destination = getDestination(current-1, v[current], v, maxVal);
+        next = v[current];
+        ending = v[v[v[current]]];
 
-        insert(ending, destinationNode->next);
-        insert(destinationNode, next(current,1));
-        insert(current, nextNode);
+        v[current] = v[ending];
+        v[ending] = v[destination];
+        v[destination] = next;
 
-        current = nextNode;
+        current = v[current];
     }
-
-    current = pos[1];
 
     if (star == 1) {
         std::cout << "Star1: ";
-        showLL(current);
+        showLL(v);
     } else if (star == 2) {
-        std::cout << "Star2: ";
-        unsigned long fst = (unsigned long)current->next->val;
-        unsigned long snd = (unsigned long)current->next->next->val;
-        std::cout << fst * snd << std::endl;
+        unsigned long fst = (unsigned long)v[1];
+        unsigned long snd = (unsigned long)v[v[1]];
+        std::cout << "Star2: " << fst * snd << std::endl;
     }
 }
 
-std::vector<int> parseInput(std::string input)
+std::vector<int> parseInput(const std::string input)
 {
     std::vector<int> v;
 
@@ -126,7 +81,7 @@ std::vector<int> parseInput(std::string input)
 
 void fillVector(std::vector<int> &v)
 {
-    int lim = 1000000;
+    const int lim = 1000000;
     for (int i = 10; i <= lim; ++i) {
         v.push_back(i);
     }
