@@ -1,42 +1,48 @@
 import Data.Char (digitToInt,intToDigit)
 import Data.List (delete)
+import qualified Data.IntMap.Strict as IntMap
 
-determineLabel max i xs 
-    | i == 0 = determineLabel max max xs
-    | otherwise = if i `elem` xs then determineLabel max (i-1) xs else i
+getDestination max i xs 
+    | i == 0 = getDestination max max xs
+    | otherwise = if i `elem` xs then getDestination max (i-1) xs else i
 
-move :: [Int] -> [Int]
-move (x:xs) = bef ++ (destination:pickedUp) ++ after ++ [x]
+move :: Int -> IntMap.IntMap Int -> IntMap.IntMap Int
+move current im = nim
     where
-        (pickedUp,rest) = splitAt 3 xs
-        destination = determineLabel 9 (x-1) (x:pickedUp)
-        (bef,_:after) = break (==destination) rest
+        destination = getDestination (IntMap.size im) (current-1) [next,temp,ending]
+        next = im IntMap.! current
+        temp = im IntMap.! next
+        ending = im IntMap.! temp
+        nim = IntMap.insert destination next $ IntMap.insert ending (im IntMap.! destination) $ IntMap.insert current (im IntMap.! ending) im
 
-toResult :: [Int] -> String
-toResult (1:xs) = foldr ((:).intToDigit) [] xs
-toResult (x:xs) = toResult $ xs ++ [x]
+game :: Int -> Int -> IntMap.IntMap Int -> IntMap.IntMap Int
+game 0 _ im = im
+game t current im = game (t-1) (nim IntMap.! current) nim
+    where nim = move current im
 
-
-game :: Int -> [Int] -> [Int]
-game 0 xs = xs
-game i xs = game (i-1) (move xs)
-
-million = 10^6
-
-star1 ls = toResult $ game 100 ls
-
-star2 :: [Int] -> Integer
-star2 ls = aux $ game (10*million) ls
+parseRes :: Int -> IntMap.IntMap Int -> String
+parseRes i im = aux $ im IntMap.! i
     where
-        aux (1:a:b:_) = (fromIntegral a)*(fromIntegral b)
-        aux (x:xs) = aux $ xs ++ [x]
+        aux 1 = []
+        aux i' = intToDigit i' : aux nxt
+            where nxt = im IntMap.! i'
+
+star1 ls = parseRes 1 resIm
+    where
+        im = IntMap.fromList $ zip ls (drop 1 $ cycle ls)
+        resIm = game 100 (head ls) im
+
+star2 ls = next*(resIm IntMap.! next)
+    where
+        next = resIm IntMap.! 1
+        ls' = ls ++ [10..10^6]
+        im = IntMap.fromList $ zip ls' (drop 1 $ cycle ls')
+        resIm = game (10^7) (head ls) im
 
 main :: IO ()
 main = do
   contents <- getContents
   let val = map digitToInt contents
-  let ls = val ++ [10..million]
 
   putStrLn $ "Star 1: " ++ (star1 val)
-  putStrLn $ "Star 2: " ++ "Sorry, haskell implementation is too slow"
-  --putStrLn $ "Star 2: " ++ (show $ star2 ls)
+  putStrLn $ "Star 2: " ++ (show $ star2 val)
