@@ -58,4 +58,4 @@ main = do
   let ls = map toLs $ lines contents
 
   putStrLn $ "Star 1: " ++ (show $ star1 ls)
-  putStrLn $ "Star 1: " ++ (show $ star2 ls)
+  putStrLn $ "Star 2: " ++ (show $ star2 ls)

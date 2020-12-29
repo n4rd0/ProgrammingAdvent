@@ -1,15 +1,4 @@
-
-star1 :: [[Int]] -> (Int,Int) -> Int
-star1 ls (x,y) = helper ls 1 0
-    where
-        len = (length . head) ls
-        helper :: [[Int]] -> Int -> Int -> Int
-        helper ls' t acc 
-            | length ls' <= y = acc
-            | otherwise = helper (k:ks) (t+1) acc'
-            where
-                (k:ks) = drop y ls'
-                acc' = acc + (k !! ((x*t) `mod` len))
+import qualified Data.Vector as V
 
 directions = [
     (1,1),
@@ -19,12 +8,24 @@ directions = [
     (1,2)
     ]
 
-star2 :: [[Int]] -> Int
+star1 :: V.Vector (V.Vector Int) -> (Int,Int) -> Int
+star1 ls (x,y) = foldr helper 0 [1..rows]
+    where
+        rows = V.length ls
+        cols = V.length $ ls V.! 0
+        helper :: Int -> Int -> Int
+        helper t acc 
+            | y*t >= rows = acc
+            | otherwise = acc+thisVal
+            where thisVal = (ls V.! (y*t)) V.! (x*t `rem` cols)
+
+star2 :: V.Vector (V.Vector Int) -> Int
 star2 ls = (product . map (star1 ls)) directions
 
 main :: IO ()
 main = do
   contents <- getContents
-  let ls = map (map (\x -> if x=='#' then 1 else 0)) $ lines contents
-  putStrLn $ "Star 1: " ++ (show $ star1 ls (3,1))
-  putStrLn $ "Star 2: " ++ (show $ star2 ls)
+  let ls = map (map (fromEnum . (=='#'))) $ lines contents
+  let v = V.fromList $ map V.fromList ls
+  putStrLn $ "Star 1: " ++ (show $ star1 v (3,1))
+  putStrLn $ "Star 2: " ++ (show $ star2 v)

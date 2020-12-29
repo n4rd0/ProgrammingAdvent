@@ -1,13 +1,13 @@
 import qualified Data.Map as Map
 import Data.List.Split (splitOn)
 
-type Bin = [Bool]
+type Bin = [Int]
 data Program = Mask [Int] | Mem Int Bin deriving (Show)
 
 pad :: Int -> a -> [a] -> [a]
 pad upTo filler ls = replicate (upTo - length ls) filler ++ ls
 
-padding = pad 36 False
+padding = pad 36 0
 
 parse :: [String] -> Program
 parse [lft, rght] = if lft == "mask"
@@ -19,17 +19,16 @@ parse [lft, rght] = if lft == "mask"
             aux 'X' = -1
             dir = read $ tail $ dropWhile (/='[') (takeWhile (/=']') lft)
             val = reverse $ toBin $ read rght
-parse _ = error "EYO"
 
-bitwise :: Int -> Bool -> Bool
-bitwise 0 _ = False
-bitwise 1 _ = True
+bitwise :: Int -> Int -> Int
+bitwise 0 _ = 0
+bitwise 1 _ = 1
 bitwise _ b = b
 
-floating :: Int -> Bool -> Int
+floating :: Int -> Int -> Int
 floating 1 _ = 1
 floating (-1) _ = -1
-floating _ b = fromEnum b
+floating _ b = b
 
 applyMask :: Program -> Bin -> Bin
 applyMask (Mask arr) val = zipWith bitwise arr (padding val)
@@ -44,13 +43,13 @@ toLs ps = map reverse $ tail $ toLs' ps []
 
 toBin :: Int -> Bin
 toBin 0 = []
-toBin n = (n `mod` 2 == 1) : toBin (n `div` 2)
+toBin n = (fromEnum $ n `rem` 2 == 1) : toBin (n `div` 2)
 
 toDecimal :: Bin -> Int
 toDecimal = foldl (\acc x -> 2*acc + fromEnum x) 0
 
 genMemory :: [Program] -> Map.Map Int Bin
-genMemory p = Map.fromList $ zip ls (repeat [False])
+genMemory p = Map.fromList $ zip ls (repeat [0])
     where
         ls = foldr extractMems [] p
         extractMems (Mem dir _) acc = dir:acc
@@ -62,8 +61,8 @@ allCombinations :: [Int] -> [Bin]
 allCombinations ls = diverge (reverse ls) []
     where
         diverge (x:xs) acc = if x == -1
-            then diverge xs (False:acc) ++ diverge xs (True:acc)
-            else diverge xs ((x == 1):acc)
+            then diverge xs (0:acc) ++ diverge xs (1:acc)
+            else diverge xs (x:acc)
         diverge _ acc = [acc]
 
 applyFloatingMask :: Program -> Bin -> [Bin]

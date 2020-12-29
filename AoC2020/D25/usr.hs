@@ -1,5 +1,5 @@
 multModulo :: Int -> Int -> Int -> Int
-multModulo modulo a b = (a * b) `mod` modulo
+multModulo modulo a b = (a * b) `rem` modulo
 
 operation = multModulo 20201227
 

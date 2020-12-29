@@ -6,21 +6,21 @@ type Cell = Int
 
 dimension = 4
 
--- 16 in 4d = 1+2*3+9+0*27 = [0,1,0,-1]
+-- 16 in 4d = 1+2*3+9+0*27 = map (-1) [1 2 1 0] = [0 1 0 -1]
 toDirection :: Int -> Coord
-toDirection = reverse . take dimension . map (\x -> x `mod` 3 - 1) . iterate d
+toDirection = reverse . take dimension . map (\x -> x `rem` 3 - 1) . iterate d
     where d = (flip div) 3
 
-possibleDirections1 = delete (replicate dimension 0) $ map toDirection [1,4..3^4-1]
-possibleDirections2 = delete (replicate dimension 0) $ map toDirection [0..3^4-1]
+possibleDirections1 = delete (replicate dimension 0) $ map toDirection [1,4..3^dimension-1]
+possibleDirections2 = delete (replicate dimension 0) $ map toDirection [0..3^dimension-1]
 
 --Bri ish spelling
 getNeighbours :: [Coord] -> Coord -> [Coord]
 getNeighbours ls c = map (zipWith (+) c) ls
 
 updateCell :: Cell -> Int -> Cell
-updateCell 1 2 = 1
 updateCell _ 3 = 1
+updateCell 1 2 = 1
 updateCell _ _ = 0
 
 next :: [Coord] -> Map.Map Coord Cell -> Map.Map Coord Cell

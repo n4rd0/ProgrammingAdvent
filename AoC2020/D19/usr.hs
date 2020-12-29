@@ -61,7 +61,7 @@ wordFollowsRule _ _ = False
 -- We can't keep on concatenating since there are too many possible combinations
 star lenTake rules strings = length $ filter (\x -> any (wordFollowsRule x) rules0) strings
     where
-        rules' = foldr (Map.delete) rules [0,8,11]
+        rules' = foldr Map.delete rules [0,8,11]
         maxL = maximum $ map length strings
         resMap = collapseRules rules' maxL
         lenTake' = if lenTake == 0 then maxL `div` 2 else lenTake

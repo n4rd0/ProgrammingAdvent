@@ -28,7 +28,7 @@ allRulesThatApply (r:rs) g = if all (followsRestriction r) g then r : allRulesTh
 allRulesThatApply _ _ = []
 
 possibleRules :: [Restriction] -> [[Int]] -> [[Restriction]]
-possibleRules rs gs = foldr ((:).(allRulesThatApply rs)) [] gs
+possibleRules rs = map (allRulesThatApply rs)
 
 removeIfUnique :: [[Restriction]] -> [[Restriction]] -> [[Restriction]]
 removeIfUnique (l:ls) complete = if length l == 1 && changed
@@ -47,7 +47,7 @@ getIndices _ _ _ = []
 
 star1 restrictions = sum . filter (not . followsOneRestriction restrictions) . foldr1 (++)
 
---In my sample there was no need for branching, so it isn't implemented
+--There was no need for branching in my sample, so it isn't implemented
 star2 restrictions otherTickets myTicket = (product . map (myTicket !!) . indices) check
     where
         indices = getIndices (isPrefixOf "departure") 0

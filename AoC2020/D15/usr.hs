@@ -1,77 +1,46 @@
-import qualified Data.Map as Map
-import qualified Data.HashTable.IO as H
+import qualified Data.IntMap as IntMap
+import qualified Data.Vector.Unboxed.Mutable as MV
 import Data.List.Split (splitOn)
-import Data.Maybe (fromMaybe)
+import Control.Monad.ST (runST)
+import Control.Monad (zipWithM_)
 
-next :: Int -> Map.Map Int Int -> Int -> (Int, Map.Map Int Int)
-next turn m num = (numberSpoken, Map.insert num turn m)
+next :: Int -> IntMap.IntMap Int -> Int -> Int
+next turn m num = turn - lastTime
+    where lastTime = IntMap.findWithDefault turn num m
+
+findVal :: Int -> IntMap.IntMap Int -> Int -> Int
+findVal target m lastNum = aux m (IntMap.size m + 1) lastNum
     where
-        lastTime = Map.findWithDefault turn num m
-        numberSpoken = turn - lastTime
+        aux m turn lastN = if turn == target then lastN else aux m' (succ turn) lastN'
+            where
+              m' = IntMap.insert lastN turn m
+              lastN' = next turn m lastN
 
-findVal :: Int -> Map.Map Int Int -> Int -> Int
-findVal target m lastNum = aux nextTurn m lastNum
+star num ls = findVal num (IntMap.fromList $ zip ls [1..]) 0
+
+findValM 0 y _ _ = return y
+findValM target' y i v = do
+    n <- MV.read v y
+    let y' = if n == 0 then 0 else i - n
+    MV.write v y i
+    findValM (target' - 1) y' (succ i) v
+
+--Using the state monad, so that we can use mutable data structures
+star' num ls = get num 
     where
-        nextTurn = map next [Map.size m + 1..target - 1]
-        aux (f:fs) m lastN = aux fs m' lastN'
-            where (lastN',m') = f m lastN
-        aux [] _ lastN = lastN
-
---The previous approach runs out of memory very fast,
--- I guess that it keeps old Maps in memory
-
---Here I use the IO monad to have fast inserts,
--- and there is no need to copy anything
--- somehow the complexity isn't linear,
--- I guess it is haskell's lazyness
-type HashTable k v = H.BasicHashTable k v
-
-insertLs :: HashTable Int Int -> [(Int,Int)] -> IO ()
-insertLs m ((k,v):rs) = do
-    H.insert m k v
-    insertLs m rs
-insertLs m _ = return ()
-
-genHT :: Int -> [Int] -> IO (HashTable Int Int)
-genHT num ls = do
-    m <- H.newSized num
-    insertLs m (zip ls [1..])
-    return m
-
-findVal' :: (Int,Int) -> HashTable Int Int -> Int -> IO (Int)
-findVal' (from,to) m lastNum = aux (from+1) m lastNum
-    where
-        aux :: Int -> HashTable Int Int -> Int -> IO (Int)
-        aux turn m lastN = if turn == to
-            then return lastN 
-            else do
-                let f = next' turn
-                (lastN',m') <- f m lastN
-                aux (turn+1) m' lastN'
-
-next' :: Int -> HashTable Int Int -> Int -> IO (Int, HashTable Int Int)
-next' turn m num = do
-    maybeLastTime <- H.lookup m num
-    let lastTime = fromMaybe turn maybeLastTime
-    let numberSpoken = turn - lastTime
-    H.insert m num turn
-    return (numberSpoken, m)
-
-star' num ls = do
-    m <- genHT num ls
-    findVal' (length ls, num) m 0
-
-star num ls = findVal num (Map.fromList $ zip ls [1..]) 0
+      l = length ls
+      get i = if i < l then ls !! (i-1) else get' i
+      get' target = runST $ do
+        let i = length ls + 1
+        v <- MV.new num
+        zipWithM_ (MV.write v) (init ls) [1..]
+        findValM (target - l) (last ls) l v
 
 main :: IO ()
 main = do
   contents <- getContents
   let ls = (map read . splitOn ",") contents :: [Int]
 
-  --putStrLn $ "Star 1: " ++ (show $ star 2020 ls)
-  --putStrLn $ "Star 2: " ++ (show $ star (3*10^7) ls)
-
-  s1 <- star' 2020 ls
-  putStrLn $ "Star 1: " ++ (show s1)
-  s2 <- star' (3*10^7) ls
-  putStrLn $ "Star 2: " ++ (show s2)
+  putStrLn $ "Star 1: " ++ (show $ star 2020 ls)
+  --putStrLn $ "Star 2: " ++ (show $ star (3*10^6) ls)
+  putStrLn $ "Star 2: " ++ (show $ star' (3*10^7) ls)

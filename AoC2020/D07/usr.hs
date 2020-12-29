@@ -2,43 +2,46 @@ import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Data.List.Split (splitOn)
 import Data.List (isPrefixOf)
+import Data.Hashable (hash)
+
+type Bag = Int
 
 removeEnding :: ([a] -> Bool) -> [a] -> [a]
 removeEnding f (x:xs) = if f xs then [x] else x: (removeEnding f xs)
 removeEnding _ [] = []
 
-parse :: String -> (String, [(Int, String)])
-parse ss = (container, content)
+parse :: String -> (Bag, [(Int, Bag)])
+parse ss = (hash container, content)
     where
         [container,rest] = splitOn " bags contain " ss
         content = map (aux . dropWhile (==' ')) $ filter ((/='n') . head) $ splitOn "," rest
-        aux s = (read i, (removeEnding (isPrefixOf " bag") . dropWhile (==' ')) rest)
+        aux s = (read i, hash $ (removeEnding (isPrefixOf " bag") . dropWhile (==' ')) rest)
             where (i, rest) = break (==' ') s
 
-toAscendMap :: (String, [(Int, String)]) -> Map.Map String [(Int, String)]
+toAscendMap :: (Bag, [(Int, Bag)]) -> Map.Map Bag [(Int, Bag)]
 toAscendMap (container, content) = if null content then Map.empty else Map.fromList $ map (\(i,color) -> (color, [(i, container)])) content
 
-toDescendMap :: (String, [(Int, String)]) -> Map.Map String [(Int, String)]
+toDescendMap :: (Bag, [(Int, Bag)]) -> Map.Map Bag [(Int, Bag)]
 toDescendMap (container, content) = if null content then Map.empty else Map.singleton container content
 
-genSet :: Map.Map String [(Int, String)] -> String -> Set.Set String -> Set.Set String
+genSet :: Map.Map Bag [(Int, Bag)] -> Bag -> Set.Set Bag -> Set.Set Bag
 genSet m key acc = case key `Map.lookup` m of
         Just val -> foldr aux nacc val
-        otherwise -> nacc
+        Nothing -> nacc
         where
             nacc = (key `Set.insert` acc)
             aux (_,s) set = genSet m s set
 
-countBags :: Map.Map String [(Int, String)] -> String -> Int
+countBags :: Map.Map Bag [(Int, Bag)] -> Bag -> Int
 countBags m key = case key `Map.lookup` m of
         Just val -> foldr aux 0 val
-        otherwise -> 0
+        Nothing -> 0
         where aux (i,s) acc = acc + i + (i * countBags m s)
 
-star1 ls = (+(-1)) $ length $ genSet m "shiny gold" Set.empty
+star1 ls = (+(-1)) $ length $ genSet m (hash "shiny gold") Set.empty
     where m = (foldr1 (Map.unionWith (++)) . map toAscendMap) ls
 
-star2 ls = countBags m "shiny gold"
+star2 ls = countBags m (hash "shiny gold")
     where m = (foldr1 Map.union . map toDescendMap) ls
 
 main :: IO ()

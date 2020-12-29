@@ -1,7 +1,7 @@
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Data.List.Split (splitOn)
-import Data.List (intersperse)
+import Data.List (intercalate, intersect)
 
 type Food = ([String],[String])
 
@@ -29,9 +29,7 @@ genMaps ls = (allergenToFood, foodToAllergen)
     where
         foodToAllergen = invert allergenToFood
         allergenToFood = simplify jointMap
-        jointMap = foldr1 (Map.unionWith aux) inverseMap
-        aux a b = Set.toList set
-            where set = (Set.fromList a) `Set.intersection` (Set.fromList b)
+        jointMap = foldr1 (Map.unionWith intersect) inverseMap
         inverseMap = map (toMap . swap) ls
 
 star1 ls = length $ filter ((flip Set.member) cleanFoods) listOfIngredients
@@ -44,8 +42,7 @@ star1 ls = length $ filter ((flip Set.member) cleanFoods) listOfIngredients
         listOfIngredients = foldr1 (++) $ map fst ls
         possible = map toMap ls
 
-star2 ls = foldr1 (++) $ intersperse "," $ map (head . snd) $ Map.toAscList allergenToFood
-    where (allergenToFood,_) = genMaps ls        
+star2 ls = intercalate "," $ map (head . snd) $ Map.toAscList $ fst $ genMaps ls
 
 main :: IO ()
 main = do

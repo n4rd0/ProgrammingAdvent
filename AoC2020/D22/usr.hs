@@ -2,20 +2,21 @@ import Data.List.Split (splitOn)
 import qualified Data.Set as Set
 
 score :: [Int] -> Int
-score ls = sum $ zipWith (*) (reverse ls) [1..]
+score ls = sum $ zipWith (*) ls [l,l-1..]
+    where l = length ls
 
-changeDeck :: Bool -> [Int] -> [Int] -> ([Int],[Int])
-changeDeck True (a:as) (b:bs) = (as++[a,b],bs)
-changeDeck False (a:as) (b:bs) = (as,bs++[b,a])
+modifyDeck :: Bool -> [Int] -> [Int] -> ([Int],[Int])
+modifyDeck True (a:as) (b:bs) = (as++[a,b],bs)
+modifyDeck False (a:as) (b:bs) = (as,bs++[b,a])
 
 playSubGame :: [Int] -> [Int] -> Set.Set ([Int],[Int]) -> Bool
 playSubGame pa@(a:as) pb@(b:bs) set = (pa,pb) `Set.member` set || playSubGame pa' pb' (Set.insert (pa,pb) set)
-    where (pa',pb') = changeDeck (a>b) pa pb
+    where (pa',pb') = modifyDeck (a>b) pa pb
 playSubGame a [] _ = True
 playSubGame [] b _ = False
 
 playOneMove :: ([Int] -> [Int] -> Bool) -> [Int] -> [Int] -> ([Int],[Int])
-playOneMove determineWinner pa pb = changeDeck (determineWinner pa pb) pa pb
+playOneMove determineWinner pa pb = modifyDeck (determineWinner pa pb) pa pb
 
 play :: ([Int] -> [Int] -> ([Int],[Int])) -> [Int] -> [Int] -> Set.Set ([Int],[Int]) -> Int
 play _ a [] _ = score a

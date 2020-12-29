@@ -5,9 +5,7 @@ type Vec = (Int,Int)
 data Move = Move Vec Int | Turn Rotation Int | Forward Int deriving (Eq,Show)
 type Ship = (Vec, Vec)
 
-charToDir :: Map.Map Char Vec
 charToDir = Map.fromList [('N', (1,0)), ('E', (0,1)), ('S', (-1,0)), ('W', (0,-1))]
-
 charToRot = Map.fromList [('R', R), ('L', L)]
 
 manhattanDist (x,y) = abs x + abs y
@@ -30,7 +28,7 @@ moveInDir (x,y) (Move (dx,dy) steps) = (x+steps*dx,y+steps*dy)
 applyMove :: Bool -> Ship -> Move -> Ship
 applyMove False (pos, dir) mv@(Move _ _) = (moveInDir pos mv, dir) 
 applyMove _ (pos, dir) (Forward steps) = (moveInDir pos (Move dir steps), dir)
-applyMove _ (pos, dir) (Turn rot degrees) = (pos, turnVec rot dir degrees)
+applyMove _ (pos, dir) (Turn rot degrees) = (pos, turnVec rot dir (degrees `rem` 4))
 applyMove _ (pos, dir) mv = (pos, moveInDir dir mv) 
 
 star1 = manhattanDist . fst . foldl (applyMove False) ((0,0),(0,1))

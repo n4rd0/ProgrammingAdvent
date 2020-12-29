@@ -1,4 +1,5 @@
 import qualified Data.Set as Set
+import Data.Maybe (fromJust)
 
 type Seat = (Int, Int)
 
@@ -12,15 +13,17 @@ seat :: String -> Seat
 seat ss = (row', col')
   where
     (row,col) = splitAt 7 ss
-    aux f = (\x -> if f x then 1 else 0)
-    row' = toBin $ map (aux (=='B')) row
-    col' = toBin $ map (aux (=='R')) col
+    row' = toBin $ map (fromEnum . (=='B')) row
+    col' = toBin $ map (fromEnum . (=='R')) col
 
 star1 = maximum . map (sId . seat)
-star2 ls = Set.elemAt 0 availableSeats
+
+star2 ls = head $ filter aux [mn..mx]
   where
-    seats = map (sId . seat) ls
-    availableSeats = (Set.fromList [(minimum seats)..(maximum seats)]) Set.\\ (Set.fromList seats)
+    mn = fromJust $ Set.lookupGT 0 seats
+    mx = fromJust $ Set.lookupLT (2^31) seats
+    seats = Set.fromList $ map (sId . seat) ls
+    aux x = not $ x `Set.member` seats
 
 main :: IO ()
 main = do
