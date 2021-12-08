@@ -4,7 +4,7 @@ split = foldr (\c acc@(y:ys) -> if c == ',' then []:acc else (c:y):ys) [[]]
 
 triangNum n = n*(n+1) `div` 2
 
-totalFuelCost f ls pos = sum $ map (f.abs.(+(-pos))) ls
+totalFuelCost f ls pos = sum $ map (f.abs.(pos-)) ls
 
 --More efficient ways of computing the first star
 --First, the optimal element has to be within the list
