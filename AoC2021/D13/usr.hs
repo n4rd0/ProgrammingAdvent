@@ -1,11 +1,7 @@
 import qualified Data.Set as S
-import qualified Data.Set as S
-import Data.List (transpose)
-import Data.Char (isLower)
 import Data.Text (splitOn, pack, unpack)
 
 split = foldr (\c acc@(y:ys) -> if c == ',' then []:acc else (c:y):ys) [[]]
-fj (Just x) = x
 
 parse :: String -> ([(Int,Int)],[(Char,Int)])
 parse ls = (coords',instr')
@@ -15,12 +11,12 @@ parse ls = (coords',instr')
     instr' = map ((\(x:_:y)->(x,read y)) . drop 11) $ lines instr
 
 
-aux ('x',v) (x,y) = if x < v then (x,y) else (x - 2*(x-v),y)
+aux ('x',v) (x,y) = if x < v then (x,y) else (x-2*(x-v),y)
 aux ('y',v) (x,y) = if y < v then (x,y) else (x,y-2*(y-v))
 
 applyFold s instr = foldr (S.insert . aux instr) S.empty (S.elems s)
 
-see s p = if p `S.member` s then '#' else '.'
+see s p = if p `S.member` s then '#' else ' '
 
 insertBreaks _ [] = ""
 insertBreaks breakSz ls = x ++ '\n':insertBreaks breakSz xs
